@@ -18,7 +18,7 @@ import { imagePlaceholder } from '@bebeal/vite-img-placeholder'
 // In your Vite config
 export default defineConfig({
   plugins: [
-    imagePlaceholder({ style: 'blur' }) // 'blur', 'shimmer', or 'rgb'
+    imagePlaceholder({ style: 'blur' }) //  opional style: 'blur' (default), 'shimmer', or 'rgb'
   ]
 })
 ```

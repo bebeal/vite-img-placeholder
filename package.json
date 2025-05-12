@@ -1,0 +1,80 @@
+{
+  "name": "@bebeal/vite-img-placeholder",
+  "description": "Vite plugin for adding image placeholders with blur, shimmer, or RGB effects",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/vite-img-placeholder.js",
+  "module": "./dist/vite-img-placeholder.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/vite-img-placeholder.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/vite-img-placeholder.js"
+      }
+    },
+    "./style.css": "./dist/assets/vite-img-placeholder.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bebeal/vite-img-placeholder"
+  },
+  "homepage": "https://github.com/bebeal/vite-img-placeholder",
+  "keywords": [
+    "vite",
+    "plugin",
+    "images",
+    "placeholder",
+    "blur",
+    "shimmer",
+    "rgb",
+    "loading"
+  ],
+  "author": "bebeal",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --config demo/vite.config.ts",
+    "build": "rimraf dist && tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@bebeal/ripple-effect": "^1.0.0",
+    "@bebeal/terminal": "^0.3.1",
+    "@mdx-js/react": "^3.1.0",
+    "@mdx-js/rollup": "^3.1.0",
+    "@radix-ui/react-tooltip": "^1.2.4",
+    "@wooorm/starry-night": "^3.7.0",
+    "canvas": "^3.1.0",
+    "mdast-util-mdx-jsx": "^3.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "rehype-starry-night": "^2.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/node": "^22.15.17",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.22.0",
+    "eslint-plugin-mdx": "^3.4.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1",
+    "vite-plugin-dts": "^4.5.3"
+  },
+  "packageManager": "yarn@4.9.1"
+}

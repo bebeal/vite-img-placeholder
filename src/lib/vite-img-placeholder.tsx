@@ -1,5 +1,4 @@
 import { createCanvas, loadImage } from 'canvas';
-import path from 'path';
 import { Plugin } from 'vite';
 import { getBlurPlaceholder, getRgbPlaceholder, getShimmerPlaceholder } from './image-placeholders';
 
@@ -136,7 +135,7 @@ export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style:
 
       try {
         const [imagePath, query] = id.split('?');
-        const filename = path.basename(imagePath);
+        const filename = imagePath.split('/').pop() || imagePath;
 
         let placeholderType = options.style;
         if (query) {

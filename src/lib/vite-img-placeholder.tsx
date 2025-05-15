@@ -125,6 +125,11 @@ export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style:
     name: 'vite-image-placeholder',
 
     async transform(_code, id) {
+      // Skip everything in SSR
+      if (isSSR) {
+        return null;
+      }
+
       if (!id.match(/\.(png|jpe?g|gif|webp|avif)(\?.*)?$/)) {
         return null;
       }
@@ -132,11 +137,6 @@ export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style:
       try {
         const [imagePath, query] = id.split('?');
         const filename = path.basename(imagePath);
-
-        // Skip actual processing in SSR
-        if (isSSR) {
-          return _code;
-        }
 
         let placeholderType = options.style;
         if (query) {

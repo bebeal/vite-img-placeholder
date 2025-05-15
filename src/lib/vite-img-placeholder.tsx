@@ -6,10 +6,10 @@ import { getBlurPlaceholder, getRgbPlaceholder, getShimmerPlaceholder } from './
 export const placeholderStyles = ['blur', 'shimmer', 'rgb'] as const;
 export type PlaceholderStyle = typeof placeholderStyles[number];
 
-interface StyleProperties {
-  [key: string]: string;
-}
+// Check if we're running in browser environment
+const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined';
 
+// DOM manipulation code - only runs in browser
 const createDOMContentLoadedHandler = (): (() => void) => {
   return () => {
     const processImg = (img: HTMLImageElement): void => {
@@ -31,22 +31,17 @@ const createDOMContentLoadedHandler = (): (() => void) => {
         const bgImage = computedStyle.backgroundImage;
 
         if (bgImage && bgImage !== 'none') {
-          // CRITICAL FIX: Clone all image properties exactly
-          const originalStyles = {};
+          const originalStyles: Record<string, string> = {};
           for (let i = 0; i < computedStyle.length; i++) {
             const prop = computedStyle[i];
-            (originalStyles as unknown as StyleProperties)[prop] = computedStyle.getPropertyValue(prop);
+            originalStyles[prop] = computedStyle.getPropertyValue(prop);
           }
-
-          // Remember original position in DOM
           const nextSibling = img.nextSibling;
           const parentNode = img.parentNode;
 
-          // Create wrapper with EXACTLY the same styles as img
+          // create identical wrapper
           const wrapper = document.createElement('div');
           wrapper.className = 'image-with-placeholder';
-
-          // Position placeholder to match image EXACTLY
           const placeholder = document.createElement('div');
           placeholder.className = 'image-placeholder';
           placeholder.style.backgroundImage = bgImage;
@@ -67,7 +62,6 @@ const createDOMContentLoadedHandler = (): (() => void) => {
             }
           }
 
-          // Clear background from img
           img.style.backgroundImage = 'none';
 
           // Hide image initially until fully loaded
@@ -111,7 +105,7 @@ const createDOMContentLoadedHandler = (): (() => void) => {
           }
           if (node.nodeType === Node.ELEMENT_NODE) {
             const element = node as Element;
-            element.querySelectorAll('img').forEach(img => {
+            element.querySelectorAll('img').forEach((img) => {
               processImg(img as HTMLImageElement);
             });
           }
@@ -124,6 +118,9 @@ const createDOMContentLoadedHandler = (): (() => void) => {
 export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style: 'shimmer' }): Plugin => {
   const placeholders = new Map<string, { file: string, data: string, type: PlaceholderStyle }>();
 
+  // Skip processing in SSR
+  const isSSR = !isBrowser();
+
   return {
     name: 'vite-image-placeholder',
 
@@ -134,6 +131,12 @@ export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style:
 
       try {
         const [imagePath, query] = id.split('?');
+        const filename = path.basename(imagePath);
+
+        // Skip actual processing in SSR
+        if (isSSR) {
+          return _code;
+        }
 
         let placeholderType = options.style;
         if (query) {
@@ -152,41 +155,45 @@ export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style:
           }
         }
 
-        const img = await loadImage(imagePath);
-        const widthInt = img.width;
-        const heightInt = img.height;
-        let placeholderData: string;
+        try {
+          const img = await loadImage(imagePath);
+          const widthInt = img.width;
+          const heightInt = img.height;
+          let placeholderData: string;
 
-        switch(placeholderType) {
-          case 'shimmer': {
-            placeholderData = getShimmerPlaceholder(widthInt, heightInt);
-            break;
+          switch(placeholderType) {
+            case 'shimmer': {
+              placeholderData = getShimmerPlaceholder(widthInt, heightInt);
+              break;
+            }
+            case 'rgb': {
+              const canvas = createCanvas(1, 1);
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, 1, 1);
+              const {data} = ctx.getImageData(0, 0, 1, 1);
+              placeholderData = getRgbPlaceholder(data[0], data[1], data[2]);
+              break;
+            }
+            case 'blur':
+            default: {
+              const blurCanvas = createCanvas(32, Math.round((32 / widthInt) * heightInt));
+              const blurCtx = blurCanvas.getContext('2d');
+              blurCtx.drawImage(img, 0, 0, blurCanvas.width, blurCanvas.height);
+              const thumbnailDataURL = blurCanvas.toDataURL('image/png');
+              placeholderData = getBlurPlaceholder({
+                widthInt,
+                heightInt,
+                blurDataURL: thumbnailDataURL
+              });
+            }
           }
-          case 'rgb': {
-            const canvas = createCanvas(1, 1);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, 1, 1);
-            const {data} = ctx.getImageData(0, 0, 1, 1);
-            placeholderData = getRgbPlaceholder(data[0], data[1], data[2]);
-            break;
-          }
-          case 'blur':
-          default: {
-            const blurCanvas = createCanvas(32, Math.round((32 / widthInt) * heightInt));
-            const blurCtx = blurCanvas.getContext('2d');
-            blurCtx.drawImage(img, 0, 0, blurCanvas.width, blurCanvas.height);
-            const thumbnailDataURL = blurCanvas.toDataURL('image/png');
-            placeholderData = getBlurPlaceholder({
-              widthInt,
-              heightInt,
-              blurDataURL: thumbnailDataURL
-            });
-          }
+
+          const compositeKey = `${filename}-${placeholderType}`;
+          placeholders.set(compositeKey, { file: filename, data: placeholderData, type: placeholderType });
+        } catch (error) {
+          // Silently fail in SSR, don't try to generate fallbacks
+          console.error(`Error processing image ${imagePath}:`, error);
         }
-
-        const filename = path.basename(imagePath);
-        const compositeKey = `${filename}-${placeholderType}`;
-        placeholders.set(compositeKey, { file: filename, data: placeholderData, type: placeholderType });
 
         return _code;
       } catch (error) {
@@ -196,6 +203,11 @@ export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style:
     },
 
     transformIndexHtml() {
+      // Skip in SSR
+      if (isSSR) {
+        return [];
+      }
+
       let css = '';
       placeholders.forEach((info) => {
         const { file, data, type } = info;

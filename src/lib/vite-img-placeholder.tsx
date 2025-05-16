@@ -5,9 +5,6 @@ import { getBlurPlaceholder, getRgbPlaceholder, getShimmerPlaceholder } from './
 export const placeholderStyles = ['blur', 'shimmer', 'rgb'] as const;
 export type PlaceholderStyle = typeof placeholderStyles[number];
 
-// Check if we're running in browser environment
-const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined';
-
 // DOM manipulation code - only runs in browser
 const createDOMContentLoadedHandler = (): (() => void) => {
   return () => {
@@ -117,18 +114,10 @@ const createDOMContentLoadedHandler = (): (() => void) => {
 export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style: 'shimmer' }): Plugin => {
   const placeholders = new Map<string, { file: string, data: string, type: PlaceholderStyle }>();
 
-  // Skip processing in SSR
-  const isSSR = !isBrowser();
-
   return {
     name: 'vite-image-placeholder',
 
     async transform(_code, id) {
-      // Skip everything in SSR
-      if (isSSR) {
-        return null;
-      }
-
       if (!id.match(/\.(png|jpe?g|gif|webp|avif)(\?.*)?$/)) {
         return null;
       }

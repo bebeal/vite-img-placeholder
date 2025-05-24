@@ -111,19 +111,19 @@ export const Demo = () => {
           <Terminal language="jsx" title="Blur." className="w-500">
             {blurCode}
           </Terminal>
-          <img src={mountainImageBlur} style={{ objectFit: 'contain', maxWidth: '450px', height: '100%' }} />
+          <img src={mountainImageBlur} style={{ objectFit: 'contain', maxWidth: '350px', height: '100%' }} />
         </div>
         <div className="demo-display-row">
           <Terminal language="jsx" title="Shimmer." className="w-500">
             {shimmerCode}
           </Terminal>
-          <img src={mountainImageShimmer} style={{ objectFit: 'contain', maxWidth: '450px', height: '100%' }} />
+          <img src={mountainImageShimmer} style={{ objectFit: 'contain', maxWidth: '350px', height: '100%' }} />
         </div>
         <div className="demo-display-row">
           <Terminal language="jsx" title="RGB." className="w-500">
             {rgbCode}
           </Terminal>
-          <img src={mountainImageRgb} style={{ objectFit: 'contain', maxWidth: '450px', height: '100%' }} />
+          <img src={mountainImageRgb} style={{ objectFit: 'contain', maxWidth: '350px', height: '100%' }} />
         </div>
       </div>
     </div>

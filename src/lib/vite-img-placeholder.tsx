@@ -191,11 +191,6 @@ export const imagePlaceholder = (options: { style: PlaceholderStyle } = { style:
     },
 
     transformIndexHtml() {
-      // Skip in SSR
-      if (isSSR) {
-        return [];
-      }
-
       let css = '';
       placeholders.forEach((info) => {
         const { file, data, type } = info;

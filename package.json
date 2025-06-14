@@ -1,7 +1,7 @@
 {
   "name": "@bebeal/vite-img-placeholder",
   "description": "Vite plugin for adding image placeholders with blur, shimmer, or RGB effects",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publishConfig": {
     "access": "public"
   },

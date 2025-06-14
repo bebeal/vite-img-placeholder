@@ -1,0 +1,132 @@
+@import './fonts/BerkeleyMono.css';
+
+:root {
+  --bg-light: #ffffff;
+  --text-light: #262626;
+  --accent-light: #0066cc;
+  --container-bg-light: #f0f0f0;
+  --border-light: #8080804d;
+
+  --bg-dark: #121212;
+  --text-dark: #f0f0f0;
+  --accent-dark: #39a5ff;
+  --container-bg-dark: #1a1a1a;
+  --border-dark: #8080804d;
+}
+
+:root[data-theme="light"] {
+  --bg: var(--bg-light);
+  --text: var(--text-light);
+  --accent: var(--accent-light);
+  --container-bg: var(--container-bg-light);
+  --border: var(--border-light);
+}
+
+:root[data-theme="dark"] {
+  --bg: var(--bg-dark);
+  --text: var(--text-dark);
+  --accent: var(--accent-dark);
+  --container-bg: var(--container-bg-dark);
+  --border: var(--border-dark);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+.root {
+  height: 100%;
+}
+
+body {
+  height: 100dvh;
+  overflow: auto;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Berkeley Mono', monospace;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  padding: 10px 45px 10px 45px;
+  height: 100%;
+  width: 100%;
+}
+
+
+.left-column {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.right-column {
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  border: none;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  color: var(--text);
+  background: var(--container-bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.demo-display-col, .demo-display-row {
+  width: 100%;
+  height: 100%;
+  background-color: var(--container-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  display: grid;
+}
+
+.demo-display-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  place-items: center;
+  gap: 10px;
+}
+
+.demo-display-col {
+  grid-auto-flow: row;
+  place-items: center;
+  gap: 10px;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--container-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  box-shadow: 0 1px 2px #0002;
+  vertical-align: middle;
+}
+
+.mw-500 {
+  width: 100%;
+  max-width: 508.5px;
+}
